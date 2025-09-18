@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "plugins": [
+      {
+        "transform": "@waiting/ts-otel-weaver/transformer",
+        "include": [
+          "**/*Service.ts",
+          "**/*Repository.ts",
+          "**/*Manager.ts"
+        ],
+        "exclude": [
+          "**/*.test.ts",
+          "**/*.spec.ts"
+        ],
+        "instrumentPrivateMethods": true,
+        "spanNamePrefix": "example-app",
+        "autoInjectTracer": true,
+        "debug": true,
+        "logLevel": "info"
+      }
+    ]
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

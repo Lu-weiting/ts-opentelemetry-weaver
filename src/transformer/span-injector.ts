@@ -261,11 +261,11 @@ function createAttributesObject(method: ts.MethodDeclaration, context: Transform
       ts.factory.createIdentifier('attributes'),
       ts.factory.createObjectLiteralExpression([
         ts.factory.createPropertyAssignment(
-          ts.factory.createStringLiteral('pathors.service.name'),
+          ts.factory.createStringLiteral('service.name'),
           ts.factory.createStringLiteral(className)
         ),
         ts.factory.createPropertyAssignment(
-          ts.factory.createStringLiteral('pathors.service.method'),
+          ts.factory.createStringLiteral('service.method'),
           ts.factory.createStringLiteral(methodName)
         ),
         ts.factory.createPropertyAssignment(

@@ -1,41 +1,37 @@
 /**
- * @pathors/otel-instrumentation
+ * @waiting/ts-otel-weaver
  * 
- * OpenTelemetry instrumentation for Pathors services with automatic method tracing
- * using both Proxy-based interception and compile-time AST transformation.
+ * Zero-touch business-logic tracing for TypeScript via compile-time AST weaving.
+ * Automatic OpenTelemetry instrumentation through TypeScript transformer.
  */
 
 // ====================================================
-// Core Functions (Primary API)
+// Core API - TypeScript Transformer
 // ====================================================
-// Proxy-based tracing (runtime)
-export { traceService } from './traceService';
-
-// AST transformer (compile-time) - re-export from transformer
-export { createTracingTransformer } from './transformer/index.js';
+export { createTracingTransformer, default } from './transformer/index.js';
 
 // ====================================================
 // Type Definitions
 // ====================================================
-export type { ServiceTracingConfig } from './types';
-export type { TracingConfig } from './transformer/index.js';
-
-// ====================================================
-// Runtime Utilities
-// ====================================================
-export { tracer, getTracer } from './runtime/index.js';
+export type { 
+  TracingConfig, 
+  TransformContext, 
+  ValidationResult, 
+  TransformError 
+} from './transformer/types.js';
 
 // ====================================================
 // Utility Exports (for advanced usage)
 // ====================================================
 export {
-  safeStringify,
-  recordError,
-  type SafeSerializationOptions,
-  type ErrorRecordingOptions
-} from './utils';
+  validateConfig,
+  createTransformError,
+  logger,
+  setLogLevel
+} from './transformer/validation.js';
 
-// ====================================================
-// Default Export (Proxy-based for backward compatibility)
-// ====================================================
-export { traceService as default } from './traceService';
+export {
+  loadConfig,
+  shouldTransformFile,
+  shouldInstrumentMethod
+} from './transformer/config-loader.js';

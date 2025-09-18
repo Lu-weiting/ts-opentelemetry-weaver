@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { TransformContext } from './types.js';
-import { shouldInstrumentMethod } from './config-loader.js';
+import { shouldInstrumentMethod, shouldTransformFile } from './config-loader.js';
 import { wrapMethodWithSpan } from './span-injector.js';
 
 /**
@@ -45,6 +45,11 @@ function visitSourceFile(
   // Update transform context with source file
   transformContext.sourceFile = sourceFile.fileName;
   transformContext.hasTracerImport = hasExistingTracerImport(sourceFile);
+  
+  // Check if this file should be transformed
+  if (!shouldTransformFile(sourceFile.fileName, transformContext.config)) {
+    return sourceFile; // Return unchanged if not matching patterns
+  }
   
   // First, visit all child nodes to transform methods
   const transformedStatements = sourceFile.statements.map(statement => 
@@ -216,21 +221,20 @@ function createTracerImports(): ts.Statement[] {
     ts.factory.createImportDeclaration(
       undefined,
       ts.factory.createImportClause(
-        false,
-        undefined,
+        undefined, // phaseModifier (replaces isTypeOnly boolean)
+        undefined, // name
         ts.factory.createNamedImports([
           ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier('trace')),
           ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier('SpanStatusCode')),
           ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier('SpanKind'))
         ])
       ),
-      ts.factory.createStringLiteral('@opentelemetry/api'),
-      undefined
+      ts.factory.createStringLiteral('@opentelemetry/api')
     )
   );
   
   // Create tracer instance
-  // const tracer = trace.getTracer('@pathors/otel-instrumentation');
+  // const tracer = trace.getTracer('@waiting/ts-otel-weaver');
   imports.push(
     ts.factory.createVariableStatement(
       undefined,
@@ -245,7 +249,7 @@ function createTracerImports(): ts.Statement[] {
               ts.factory.createIdentifier('getTracer')
             ),
             undefined,
-            [ts.factory.createStringLiteral('@pathors/otel-instrumentation')]
+            [ts.factory.createStringLiteral('@waiting/ts-otel-weaver')]
           )
         )],
         ts.NodeFlags.Const

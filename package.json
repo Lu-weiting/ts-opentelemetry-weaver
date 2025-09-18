@@ -1,46 +1,71 @@
 {
-    "name": "@waiting/ts-opentelemetry-weaver",
+    "name": "@waiting/ts-otel-weaver",
     "version": "1.0.0",
-    "description": "Zero-touch business-logic tracing for TypeScript via compile-time AST weaving",
+    "description": "Zero-touch business-logic tracing and OpenTelemetry automatic instrumentation for TypeScript via compile-time AST weaving",
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/index.d.ts",
-        "import": "./dist/index.js",
-        "require": "./dist/index.js"
-      },
-      "./transformer": {
-        "types": "./dist/transformer/index.d.ts",
-        "import": "./dist/transformer/index.js",
-        "require": "./dist/transformer/index.js"
-      },
-      "./dist/transformer/index.js": {
-        "import": "./dist/transformer/index.js",
-        "require": "./dist/transformer/index.js"
-      },
-      "./runtime": {
-        "types": "./dist/runtime/index.d.ts",
-        "import": "./dist/runtime/index.js",
-        "require": "./dist/runtime/index.js"
-      }
+    "keywords": [
+        "opentelemetry",
+        "typescript",
+        "instrumentation",
+        "tracing",
+        "ast",
+        "transformer",
+        "zero-touch",
+        "compile-time",
+        "business-logic"
+    ],
+    "author": "Weiting Liou",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Lu-weiting/ts-opentelemetry-weaver.git"
     },
+    "homepage": "https://github.com/Lu-weiting/ts-opentelemetry-weaver#readme",
+    "bugs": {
+        "url": "https://github.com/Lu-weiting/ts-opentelemetry-weaver/issues"
+    },
+     "exports": {
+         ".": {
+             "types": "./dist/index.d.ts",
+             "import": "./dist/index.js",
+             "require": "./dist/index.js"
+         },
+         "./transformer": {
+             "types": "./dist/transformer/index.d.ts",
+             "import": "./dist/transformer/index.js",
+             "require": "./dist/transformer/index.js"
+         }
+     },
     "files": [
-      "dist",
-      "transformer.js"
+        "dist",
+        "transformer.js"
     ],
     "scripts": {
-      "build": "tsc",
-      "dev": "tsc --watch"
-    },
-    "dependencies": {
-      "typescript": "^5.0.0"
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts --fix",
+        "prepare": "npm run build"
     },
     "devDependencies": {
-      "@types/node": "^20.0.0"
+        "@types/jest": "^29.0.0",
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.0.0",
+        "jest": "^29.0.0",
+        "ts-jest": "^29.0.0"
     },
     "peerDependencies": {
-      "@opentelemetry/api": "^1.9.0"
+        "@opentelemetry/api": "^1.9.0",
+        "typescript": "^4.5.0 || ^5.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
     }
-  }
+}

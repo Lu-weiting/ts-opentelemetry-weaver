@@ -1,4 +1,5 @@
-import { TracingConfig, DEFAULT_CONFIG } from './types.js';
+import { TracingConfig, DEFAULT_CONFIG, TransformError } from './types.js';
+import { validateConfig, createTransformError, logger, setLogLevel } from './validation.js';
 
 /**
  * Loads and validates transformer configuration
@@ -9,15 +10,32 @@ export function loadConfig(userConfig?: Partial<TracingConfig>): TracingConfig {
     ...userConfig,
   };
 
+  // Set up logging
+  if (config.logLevel) {
+    setLogLevel(config.logLevel);
+  }
+
+  if (config.debug) {
+    setLogLevel('debug');
+  }
+
+  logger.debug('Loading transformer configuration:', config);
+
   // Validate configuration
-  if (!config.include || config.include.length === 0) {
-    throw new Error('TracingConfig.include must contain at least one pattern');
+  const validation = validateConfig(config);
+  
+  if (!validation.isValid) {
+    const errorMessage = `Invalid transformer configuration: ${validation.errors.join(', ')}`;
+    logger.error(errorMessage);
+    throw createTransformError(TransformError.CONFIG_INVALID, errorMessage);
   }
 
-  if (!config.spanNamePrefix) {
-    throw new Error('TracingConfig.spanNamePrefix must be provided');
+  // Log warnings
+  for (const warning of validation.warnings) {
+    logger.warn(`Configuration warning: ${warning}`);
   }
 
+  logger.info('Transformer configuration loaded successfully');
   return config;
 }
 
@@ -56,14 +74,14 @@ export function shouldInstrumentMethod(methodName: string, config: TracingConfig
     return false;
   }
   
+  // If include methods is specified, only instrument those (highest priority)
+  if (config.includeMethods && config.includeMethods.length > 0) {
+    return config.includeMethods.includes(methodName);
+  }
+  
   // Check exclude methods
   if (config.excludeMethods?.includes(methodName)) {
     return false;
-  }
-  
-  // If include methods is specified, only instrument those
-  if (config.includeMethods && config.includeMethods.length > 0) {
-    return config.includeMethods.includes(methodName);
   }
   
   return true;
