@@ -1,0 +1,46 @@
+{
+    "name": "@weiting/ts-opentelemetry-weaver",
+    "version": "1.0.0",
+    "description": "Zero-touch business-logic tracing for TypeScript via compile-time AST weaving",
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.js"
+      },
+      "./transformer": {
+        "types": "./dist/transformer/index.d.ts",
+        "import": "./dist/transformer/index.js",
+        "require": "./dist/transformer/index.js"
+      },
+      "./dist/transformer/index.js": {
+        "import": "./dist/transformer/index.js",
+        "require": "./dist/transformer/index.js"
+      },
+      "./runtime": {
+        "types": "./dist/runtime/index.d.ts",
+        "import": "./dist/runtime/index.js",
+        "require": "./dist/runtime/index.js"
+      }
+    },
+    "files": [
+      "dist",
+      "transformer.js"
+    ],
+    "scripts": {
+      "build": "tsc",
+      "dev": "tsc --watch"
+    },
+    "dependencies": {
+      "typescript": "^5.0.0"
+    },
+    "devDependencies": {
+      "@types/node": "^20.0.0"
+    },
+    "peerDependencies": {
+      "@opentelemetry/api": "^1.9.0"
+    }
+  }
