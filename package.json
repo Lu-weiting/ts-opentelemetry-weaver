@@ -1,5 +1,5 @@
 {
-    "name": "@weiting/ts-opentelemetry-weaver",
+    "name": "@waiting/ts-opentelemetry-weaver",
     "version": "1.0.0",
     "description": "Zero-touch business-logic tracing for TypeScript via compile-time AST weaving",
     "type": "module",
