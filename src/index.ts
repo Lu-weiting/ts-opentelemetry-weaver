@@ -1,5 +1,5 @@
 /**
- * @waiting/ts-otel-weaver
+ * @waitingliou/ts-otel-weaver
  * 
  * Zero-touch business-logic tracing for TypeScript via compile-time AST weaving.
  * Automatic OpenTelemetry instrumentation through TypeScript transformer.

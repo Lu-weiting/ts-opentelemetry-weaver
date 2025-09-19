@@ -1,4 +1,4 @@
-# @waiting/ts-otel-weaver
+# @waitingliou/ts-otel-weaver
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Build Status](https://github.com/Lu-weiting/ts-opentelemetry-weaver/actions/workflows/ci.yml/badge.svg)](https://github.com/Lu-weiting/ts-opentelemetry-weaver/actions/workflows/ci.yml)
@@ -15,7 +15,7 @@ A TypeScript transformer that automatically instruments your business logic meth
 ## Installation
 
 ```bash
-npm install @waiting/ts-otel-weaver
+npm install @waitingliou/ts-otel-weaver
 ```
 
 ## Usage:
@@ -29,7 +29,7 @@ Add the transformer to your project's `tsconfig.json`:
   "compilerOptions": {
     "plugins": [
       {
-        "transform": "@waiting/ts-otel-weaver/transformer",
+        "transform": "@waitingliou/ts-otel-weaver/transformer",
         "include": [
           "**/*Service.ts",
           "**/*Repository.ts"
@@ -125,7 +125,7 @@ npm run build
 head -5 dist/your-service.js
 # should see：
 # import { trace, SpanStatusCode, SpanKind } from "@opentelemetry/api";
-# const tracer = trace.getTracer("@waiting/ts-otel-weaver");
+# const tracer = trace.getTracer("@waitingliou/ts-otel-weaver");
 ```
 
 ## 📋 Requirements

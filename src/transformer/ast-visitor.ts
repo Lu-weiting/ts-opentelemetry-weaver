@@ -234,7 +234,7 @@ function createTracerImports(): ts.Statement[] {
   );
   
   // Create tracer instance
-  // const tracer = trace.getTracer('@waiting/ts-otel-weaver');
+  // const tracer = trace.getTracer('@waitingliou/ts-otel-weaver');
   imports.push(
     ts.factory.createVariableStatement(
       undefined,
@@ -249,7 +249,7 @@ function createTracerImports(): ts.Statement[] {
               ts.factory.createIdentifier('getTracer')
             ),
             undefined,
-            [ts.factory.createStringLiteral('@waiting/ts-otel-weaver')]
+            [ts.factory.createStringLiteral('@waitingliou/ts-otel-weaver')]
           )
         )],
         ts.NodeFlags.Const

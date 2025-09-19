@@ -1,5 +1,5 @@
 {
-    "name": "@waiting/ts-otel-weaver",
+    "name": "@waitingliou/ts-otel-weaver",
     "version": "1.0.0",
     "description": "Zero-touch business-logic tracing and OpenTelemetry automatic instrumentation for TypeScript via compile-time AST weaving",
     "type": "module",
