@@ -36,8 +36,7 @@ Add the transformer to your project's `tsconfig.json`:
         "transform": "@waiting/ts-otel-weaver/transformer",
         "include": [
           "**/*Service.ts",
-          "**/*Repository.ts",
-          "**/*Manager.ts"
+          "**/*Repository.ts"
         ],
         "exclude": [
           "**/*.test.ts",
@@ -52,11 +51,23 @@ Add the transformer to your project's `tsconfig.json`:
 }
 ```
 
-### 2. Install ts-patch
+### 2. Install and Configure ts-patch
+
+ts-patch 是必要的，因為 TypeScript 編譯器預設不支援第三方 transformer。ts-patch 會修補您本機的 TypeScript 安裝，使其能夠載入我們的 transformer。
 
 ```bash
 npm install ts-patch --save-dev
 npx ts-patch install -s
+```
+
+建議在 npm scripts 中添加 postinstall 步驟，確保團隊成員安裝依賴後自動設定 ts-patch：
+```json
+"scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "postinstall": "ts-patch install -s"
+},
 ```
 
 ### 3. Add OpenTelemetry Dependencies
@@ -158,15 +169,27 @@ Each span includes the following attributes:
 
 ## 🔍 Debugging and Verification
 
-Check if transformation was successful:
+### 驗證 Transformer 是否正確載入
+
+首先確認 transformer 路徑可以正確解析：
 
 ```bash
-# Compile and check generated JavaScript
+# 檢查 transformer 路徑是否正確
+node -e "console.log(require.resolve('@waiting/ts-otel-weaver/transformer'))"
+# 應該輸出：node_modules/@waiting/ts-otel-weaver/dist/transformer/index.js
+```
+
+### 驗證轉換是否成功
+
+編譯並檢查生成的 JavaScript：
+
+```bash
+# 編譯專案
 npm run build
 
-# Check for auto-injected imports
+# 檢查自動注入的 import
 head -5 dist/your-service.js
-# Should see:
+# 應該看到：
 # import { trace, SpanStatusCode, SpanKind } from "@opentelemetry/api";
 # const tracer = trace.getTracer("@waiting/ts-otel-weaver");
 ```

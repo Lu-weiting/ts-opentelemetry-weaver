@@ -39,8 +39,7 @@
          }
      },
     "files": [
-        "dist",
-        "transformer.js"
+        "dist"
     ],
     "scripts": {
         "build": "tsc",
