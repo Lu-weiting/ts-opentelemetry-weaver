@@ -110,8 +110,8 @@ myapp.UserService.getUser
 
 ### Examples
 | Name | Description |
-|--------|------|----------|---------|-------------|
-| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/) | test|
+|--------|------|
+| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/) | test |
 
 
 ## Debugging and Verification
