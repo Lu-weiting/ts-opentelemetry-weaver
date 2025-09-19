@@ -139,14 +139,6 @@ head -5 dist/your-service.js
 - TypeScript >= 4.5.0
 - OpenTelemetry API >= 1.9.0
 
-## 🧪 Testing
-
-```bash
-npm test                # Run tests
-npm run test:coverage   # Run with coverage
-npm run test:watch      # Watch mode
-```
-
 ## 📄 License
 
 Apache-2.0 License - see [LICENSE](LICENSE) file for details.
