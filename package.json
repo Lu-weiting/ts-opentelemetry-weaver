@@ -47,7 +47,13 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "test:coverage": "jest --coverage",
-        "prepare": "npm run build"
+        "prepare": "npm run build",
+        "prepublishOnly": "npm test && npm run build",
+        "postpublish": "echo 'Successfully published @waitingliou/ts-otel-weaver to npm!'",
+        "release:prepare": "./scripts/prepare-release.sh",
+        "release:patch": "npm version patch && git push origin main --tags && npm publish",
+        "release:minor": "npm version minor && git push origin main --tags && npm publish",
+        "release:major": "npm version major && git push origin main --tags && npm publish"
     },
     "devDependencies": {
         "@types/jest": "^29.0.0",
