@@ -109,11 +109,9 @@ myapp.UserService.getUser
 ```
 
 ### Examples
-
-| Name                                                                                                  | Description                                                                                  |
-| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------- |
-| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/)                           | Agno agent examples                                                                          |
-
+| Name | Description |
+|--------|------|----------|---------|-------------|
+| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/) | test|
 
 
 ## Debugging and Verification
