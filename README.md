@@ -15,8 +15,12 @@ A TypeScript transformer that automatically instruments your business logic meth
 ## Installation
 
 ```bash
-npm install @waitingliou/ts-otel-weaver
+# Install as development dependency (compile-time only)
+npm install @waitingliou/ts-otel-weaver --save-dev
 ```
+
+> [!IMPORTANT]
+> This package is a compile-time TypeScript transformer that modifies your code during the build process. The generated JavaScript code has no runtime dependency on this package - only on `@opentelemetry/api`.
 
 ## Usage:
 
@@ -49,9 +53,10 @@ Add the transformer to your project's `tsconfig.json`:
 
 ### 2. Install and Configure ts-patch
 
-`ts-patch` patches your local typescript installation so the official `tsc` can load custom transformers from `compilerOptions.plugins`.
+`ts-patch` patches your local TypeScript installation so the official `tsc` can load custom transformers from `compilerOptions.plugins`.
 
 ```bash
+# Install ts-patch as development dependency  
 npm install ts-patch --save-dev
 npx ts-patch install -s
 ```
@@ -68,9 +73,10 @@ I recommend adding a postinstall step to your npm scripts to ensure teammates au
 
 ### 3. Add OpenTelemetry Dependencies
 
-Ensure your project has OpenTelemetry API:
+Install OpenTelemetry API as a production dependency (required at runtime):
 
 ```bash
+# Runtime dependency for generated instrumentation code
 npm install @opentelemetry/api
 ```
 
@@ -130,9 +136,13 @@ head -5 dist/your-service.js
 
 ## 📋 Requirements
 
-- Node.js >= 16.0.0
-- TypeScript >= 4.5.0
-- OpenTelemetry API >= 1.9.0
+### Development Dependencies
+- Node.js >= 18.0.0
+- TypeScript >= 4.5.0  
+- ts-patch for transformer integration
+
+### Runtime Dependencies
+- @opentelemetry/api >= 1.9.0 (for generated instrumentation code)
 
 ## 📄 License
 
