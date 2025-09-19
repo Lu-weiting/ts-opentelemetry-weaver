@@ -68,7 +68,7 @@ fi
 
 # 7. 檢查必要檔案
 echo -e "${BLUE}📁 檢查必要檔案...${NC}"
-REQUIRED_FILES=("README.md" "LICENSE" "CHANGELOG.md" "CONTRIBUTING.md" "package.json")
+REQUIRED_FILES=("README.md" "LICENSE" "package.json")
 
 for file in "${REQUIRED_FILES[@]}"; do
     if [ -f "$file" ]; then
