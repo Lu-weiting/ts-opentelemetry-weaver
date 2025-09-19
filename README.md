@@ -116,17 +116,14 @@ myapp.UserService.getUser
 
 ## Debugging and Verification
 
-### 驗證轉換是否成功
-
-編譯並檢查生成的 JavaScript：
+Compile and check:
 
 ```bash
-# 編譯專案
 npm run build
 
-# 檢查自動注入的 import
+# check import
 head -5 dist/your-service.js
-# 應該看到：
+# should see：
 # import { trace, SpanStatusCode, SpanKind } from "@opentelemetry/api";
 # const tracer = trace.getTracer("@waiting/ts-otel-weaver");
 ```
@@ -143,8 +140,8 @@ Apache-2.0 License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- Inspired by Google's Dapper paper on distributed tracing
-- Built on OpenTelemetry specifications
+- Inspired by runtime monkey-patching of OpenTelemetry Instrumentation libraries
+- Thanks to @Pathors
 - Leverages TypeScript Compiler API for AST transformations
 
 ## 🔗 Related Projects
