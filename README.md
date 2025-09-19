@@ -1,20 +1,16 @@
 # @waiting/ts-otel-weaver
 
-**Opentelemetry automatic and zero-touch business-logic instrumentation for TypeScript via compile-time AST weaving**
-
-A TypeScript transformer that automatically instruments your business logic methods with OpenTelemetry spans at compile time, achieving true "application-level transparency" as described in Google's Dapper paper.
-
-[![npm version](https://badge.fury.io/js/%40waiting%2Fts-otel-weaver.svg)](https://badge.fury.io/js/%40waiting%2Fts-otel-weaver)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![Build Status](https://github.com/nccu-cloud-native-group6/pmap/actions/workflows/unit-test.yml/badge.svg)
 
-## 🚀 Features
+**@waiting/ts-otel-weaver** is an automatic instrumentation tool, complimentary to [OpenTelemetry](https://opentelemetry.io/) to enable tracing in your business logic without messing up your codebase.
 
-- **🔧 Compile-time Instrumentation**: Uses TypeScript Transformer to automatically inject OpenTelemetry spans during compilation
-- **🎯 Zero-touch**: No code changes required in your business logic
-- **📊 Deep Tracing**: Automatically traces all method calls, including private methods
-- **⚡ Zero Runtime Overhead**: Compile-time transformation means no performance penalty
-- **🎨 Clean Architecture**: Pure compile-time approach with no runtime dependencies
+## Specification
+A TypeScript transformer that automatically instruments your business logic methods with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
+- **Zero-touch**: No code changes required in your business logic
+- **Deep Tracing**: Automatically traces all method calls, including private methods
+- **Minimal Runtime Overhead**: Instead of runtime monkey-patch -> comile-time patching
 
 ## Installation
 
@@ -22,7 +18,7 @@ A TypeScript transformer that automatically instruments your business logic meth
 npm install @waiting/ts-otel-weaver
 ```
 
-## 🎯 Usage: Compile-time Instrumentation
+## Usage:
 
 ### 1. Configure TypeScript Compiler
 
@@ -53,14 +49,14 @@ Add the transformer to your project's `tsconfig.json`:
 
 ### 2. Install and Configure ts-patch
 
-ts-patch 是必要的，因為 TypeScript 編譯器預設不支援第三方 transformer。ts-patch 會修補您本機的 TypeScript 安裝，使其能夠載入我們的 transformer。
+`ts-patch` patches your local typescript installation so the official `tsc` can load custom transformers from `compilerOptions.plugins`.
 
 ```bash
 npm install ts-patch --save-dev
 npx ts-patch install -s
 ```
 
-建議在 npm scripts 中添加 postinstall 步驟，確保團隊成員安裝依賴後自動設定 ts-patch：
+I recommend adding a postinstall step to your npm scripts to ensure teammates automatically set up ts-patch after installing dependencies:
 ```json
 "scripts": {
     "build": "tsc",
@@ -78,54 +74,26 @@ Ensure your project has OpenTelemetry API:
 npm install @opentelemetry/api
 ```
 
-### 4. Usage
-
-No code changes required! Your services will be automatically instrumented during compilation:
-
-```typescript
-// Original code
-export class UserService {
-  async getUser(id: string) {
-    const userData = await this._fetchUserData(id);
-    const processedData = await this._processUserData(userData);
-    return processedData;
-  }
-  
-  private async _fetchUserData(id: string) {
-    // Implementation
-  }
-
-  private async _processUserData(data: any) {
-    // Implementation  
-  }
-}
-
-// Usage - completely unchanged!
-export const userService = new UserService();
-
-// Compiled output automatically includes complete span wrapping!
-```
-
-### 5. Configuration Options
-
-```typescript
-interface TracingConfig {
-  include: string[];                    // File patterns to process
-  exclude: string[];                    // File patterns to exclude
-  instrumentPrivateMethods: boolean;    // Whether to process private methods
-  spanNamePrefix: string;               // Span name prefix
-  autoInjectTracer: boolean;            // Whether to auto-inject tracer imports
-  commonAttributes?: Record<string, string>; // Common attributes
-  excludeMethods?: string[];            // Method names to exclude
-  includeMethods?: string[];            // Only include these methods (highest priority)
-  debug?: boolean;                      // Enable debug mode
-  logLevel?: 'none' | 'error' | 'warn' | 'info' | 'debug';
-  maxMethodsPerFile?: number;           // Safety limit for methods per file
-}
-```
 
 
-## 📊 Auto-generated Spans and Attributes
+### 4. Configuration Options
+
+| Option | Type | Required | Default | Description |
+|--------|------|----------|---------|-------------|
+| `include` | `string[]` | ✅ | - | File patterns to process (e.g., `["**/*Service.ts"]`) |
+| `exclude` | `string[]` | ❌ | `[]` | File patterns to exclude (e.g., `["**/*.test.ts"]`) |
+| `instrumentPrivateMethods` | `boolean` | ❌ | `false` | Whether to process private methods |
+| `spanNamePrefix` | `string` | ❌ | `""` | Span name prefix for all generated spans |
+| `autoInjectTracer` | `boolean` | ❌ | `true` | Whether to auto-inject tracer imports |
+| `commonAttributes` | `Record<string, string>` | ❌ | `{}` | Common attributes added to all spans |
+| `excludeMethods` | `string[]` | ❌ | `[]` | Method names to exclude from instrumentation |
+| `includeMethods` | `string[]` | ❌ | `[]` | Only include these methods (highest priority) |
+| `debug` | `boolean` | ❌ | `false` | Enable debug mode for transformation logs |
+| `logLevel` | `'none' \| 'error' \| 'warn' \| 'info' \| 'debug'` | ❌ | `'warn'` | Logging level for transformer output |
+| `maxMethodsPerFile` | `number` | ❌ | `100` | Safety limit for methods per file |
+
+
+## Auto-generated spans structure examples
 
 When you call a method, it automatically generates a tracing structure like:
 
@@ -140,44 +108,15 @@ myapp.UserService.getUser
 └── myapp.NotificationService.sendWelcome
 ```
 
-### Span Attributes
+### Examples
 
-Each span includes the following attributes:
+| Name                                                                                                  | Description                                                                                  |
+| ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ---------------- |
+| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/)                           | Agno agent examples                                                                          |
 
-- `code.function`: Method name
-- `code.namespace`: Class name
-- `service.name`: Service name
-- `service.method`: Method name
-- Complete error tracking and status management
 
-## 🔧 Architecture Advantages
 
-### Compile-time Transformation Benefits
-
-- **🚀 Zero Runtime Overhead**: All instrumentation happens during compilation
-- **📊 Complete Coverage**: Traces all method calls, including private methods
-- **🎯 Deep Instrumentation**: Captures nested method calls automatically
-- **🛡️ Type Safety**: Fully preserves TypeScript types and interfaces
-- **🔄 Automatic Context Propagation**: Maintains trace context across all calls
-
-## 📝 Best Practices
-
-1. **File Patterns**: Use specific patterns in `include` to target only business logic files
-2. **Method Filtering**: Use `excludeMethods` to skip utility methods like `toString`
-3. **Debug Mode**: Enable `debug: true` during development to see transformation logs
-4. **Performance**: The transformer adds zero runtime overhead - all instrumentation is compile-time
-
-## 🔍 Debugging and Verification
-
-### 驗證 Transformer 是否正確載入
-
-首先確認 transformer 路徑可以正確解析：
-
-```bash
-# 檢查 transformer 路徑是否正確
-node -e "console.log(require.resolve('@waiting/ts-otel-weaver/transformer'))"
-# 應該輸出：node_modules/@waiting/ts-otel-weaver/dist/transformer/index.js
-```
+## Debugging and Verification
 
 ### 驗證轉換是否成功
 
@@ -208,13 +147,9 @@ npm run test:coverage   # Run with coverage
 npm run test:watch      # Watch mode
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Apache-2.0 License - see [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
