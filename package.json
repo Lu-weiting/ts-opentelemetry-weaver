@@ -1,6 +1,6 @@
 {
     "name": "@waitingliou/ts-otel-weaver",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Zero-touch business-logic tracing and OpenTelemetry automatic instrumentation for TypeScript via compile-time AST weaving",
     "type": "module",
     "main": "dist/index.js",
@@ -26,18 +26,18 @@
     "bugs": {
         "url": "https://github.com/Lu-weiting/ts-opentelemetry-weaver/issues"
     },
-     "exports": {
-         ".": {
-             "types": "./dist/index.d.ts",
-             "import": "./dist/index.js",
-             "require": "./dist/index.js"
-         },
-         "./transformer": {
-             "types": "./dist/transformer/index.d.ts",
-             "import": "./dist/transformer/index.js",
-             "require": "./dist/transformer/index.js"
-         }
-     },
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.js"
+        },
+        "./transformer": {
+            "types": "./dist/transformer/index.d.ts",
+            "import": "./dist/transformer/index.js",
+            "require": "./dist/transformer/index.js"
+        }
+    },
     "files": [
         "dist"
     ],
