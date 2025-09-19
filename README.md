@@ -141,7 +141,7 @@ Apache-2.0 License - see [LICENSE](LICENSE) file for details.
 ## 🙏 Acknowledgments
 
 - Inspired by runtime monkey-patching of OpenTelemetry Instrumentation libraries
-- Thanks to @Pathors
+- Thanks to @Pathors. As the Pathors system has grown, the need for monitoring has also increased, and during the process of introducing OTel, I was inspired with the idea of developing this tool.
 - Leverages TypeScript Compiler API for AST transformations
 
 ## 🔗 Related Projects
