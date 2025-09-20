@@ -89,20 +89,58 @@ npm install @opentelemetry/api
 
 ### 4. Configuration Options
 
+#### Complete tsconfig.json Compile Plugin Configuration Example
+
+```json
+{
+  "compilerOptions": {
+    "plugins": [
+      {
+        "transform": "@waitingliou/ts-otel-weaver/transformer",
+        "include": [
+          "**/*Service.ts",
+          "**/*Repository.ts",
+          "src/business/**/*.ts"
+        ],
+        "exclude": [
+          "**/*.test.ts",
+          "**/*.spec.ts",
+          "**/node_modules/**"
+        ],
+        "instrumentPrivateMethods": true,
+        "spanNamePrefix": "myapp",
+        "autoInjectTracer": true,
+        "commonAttributes": {
+          "service.name": "user-management-service",
+          "service.version": "1.2.0",
+          "deployment.environment": "production"
+        },
+        "includeMethods": ["createUser", "updateUser", "deleteUser"],
+        "excludeMethods": ["toString", "valueOf", "deprecated"],
+        "debug": false,
+        "logLevel": "warn",
+        "maxMethodsPerFile": 50
+      }
+    ]
+  }
+}
+```
+
+#### Configuration Options Reference
+
 | Option | Type | Required | Default | Description |
 |--------|------|----------|---------|-------------|
-| `include` | `string[]` | ✅ | - | File patterns to process (e.g., `["**/*Service.ts"]`) |
-| `exclude` | `string[]` | ❌ | `[]` | File patterns to exclude (e.g., `["**/*.test.ts"]`) |
-| `instrumentPrivateMethods` | `boolean` | ❌ | `false` | Whether to process private methods |
-| `spanNamePrefix` | `string` | ❌ | `""` | Span name prefix for all generated spans |
-| `autoInjectTracer` | `boolean` | ❌ | `true` | Whether to auto-inject tracer imports |
-| `commonAttributes` | `Record<string, string>` | ❌ | `{}` | Common attributes added to all spans |
-| `excludeMethods` | `string[]` | ❌ | `[]` | Method names to exclude from instrumentation |
-| `includeMethods` | `string[]` | ❌ | `[]` | Only include these methods (highest priority) |
-| `debug` | `boolean` | ❌ | `false` | Enable debug mode for transformation logs |
-| `logLevel` | `'none' \| 'error' \| 'warn' \| 'info' \| 'debug'` | ❌ | `'warn'` | Logging level for transformer output |
-| `maxMethodsPerFile` | `number` | ❌ | `100` | Safety limit for methods per file |
-
+| `include` | `string[]` | ✅ | - | **Glob patterns** for files to instrument. Supports standard glob syntax: `**/*Service.ts`, `src/business/**/*.ts` |
+| `exclude` | `string[]` | ❌ | `["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"]` | **Glob patterns** for files to skip. Takes priority over `include` |
+| `instrumentPrivateMethods` | `boolean` | ❌ | `false` | Include methods starting with `_` (underscore). Example: `_privateMethod` |
+| `spanNamePrefix` | `string` | ❌ | `"ts-otel-weaver"` | Prefix for all span names. Final span: `{prefix}.{ClassName}.{methodName}` |
+| `autoInjectTracer` | `boolean` | ❌ | `true` | Automatically add `import { trace } from "@opentelemetry/api"` to instrumented files |
+| `commonAttributes` | `Record<string, string>` | ❌ | `{}` | **Key-value pairs** added to ALL spans. Use for service metadata, environment info, etc. |
+| `includeMethods` | `string[]` | ❌ | `[]` | **EXACT method names** to instrument. **Highest priority** - only these methods will be instrumented if specified |
+| `excludeMethods` | `string[]` | ❌ | `["constructor", "toString", "valueOf", "toJSON", "inspect"]` | **EXACT method names** to skip. Ignored if `includeMethods` is set |
+| `debug` | `boolean` | ❌ | `false` | Enable detailed transformation logs during compilation |
+| `logLevel` | `'none' \| 'error' \| 'warn' \| 'info' \| 'debug'` | ❌ | `'warn'` | Control console output verbosity |
+| `maxMethodsPerFile` | `number` | ❌ | `100` | Safety limit to prevent accidentally instrumenting too many methods |
 
 ## Auto-generated spans structure examples
 
