@@ -8,13 +8,14 @@
 
 An automatic instrumentation tool, complimentary to [OpenTelemetry](https://opentelemetry.io/) to enable tracing in your business logic without messing up your codebase.
 
-> **🎯 OpenTelemetry Compatible**: This package follows [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) and integrates seamlessly with the OpenTelemetry ecosystem.
 
 ## Specification
 A TypeScript transformer that automatically instruments your business logic methods with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
 - **Zero-touch**: No code changes required in your business logic
 - **Deep Tracing**: Automatically traces all method calls, including private methods
 - **Minimal Runtime Overhead**: Instead of runtime monkey-patch -> comile-time patching
+
+> **OpenTelemetry Compatible**: This package follows [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) and integrates seamlessly with the OpenTelemetry ecosystem.
 
 ## Installation
 
