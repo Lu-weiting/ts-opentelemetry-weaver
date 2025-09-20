@@ -3,8 +3,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
 [![Build Status](https://github.com/Lu-weiting/ts-opentelemetry-weaver/actions/workflows/ci.yml/badge.svg)](https://github.com/Lu-weiting/ts-opentelemetry-weaver/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Compatible-brightgreen.svg)](https://opentelemetry.io/)
+[![npm version](https://badge.fury.io/js/%40waitingliou%2Fts-otel-weaver.svg)](https://www.npmjs.com/package/@waitingliou/ts-otel-weaver)
 
 An automatic instrumentation tool, complimentary to [OpenTelemetry](https://opentelemetry.io/) to enable tracing in your business logic without messing up your codebase.
+
+> **🎯 OpenTelemetry Compatible**: This package follows [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) and integrates seamlessly with the OpenTelemetry ecosystem.
 
 ## Specification
 A TypeScript transformer that automatically instruments your business logic methods with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
@@ -117,7 +121,7 @@ myapp.UserService.getUser
 ### Examples
 | Name | Description |
 |--------|------|
-| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/) | test |
+| [Honojs](python/instrumentation/openinference-instrumentation-agno/examples/) | not done yet |
 
 
 ## Debugging and Verification
@@ -151,7 +155,7 @@ Apache-2.0 License - see [LICENSE](LICENSE) file for details.
 ## 🙏 Acknowledgments
 
 - Inspired by runtime monkey-patching of OpenTelemetry Instrumentation libraries
-- Thanks to @Pathors. As the Pathors system has grown, the need for monitoring has also increased, and during the process of introducing OTel, I was inspired with the idea of developing this tool.
+- Thanks to [@Pathors](https://pathors.com/). As a intern in @Pathors, I was inspired with the idea of developing this tool during the process of integrating OTel.
 - Leverages TypeScript Compiler API for AST transformations
 
 ## 🔗 Related Projects

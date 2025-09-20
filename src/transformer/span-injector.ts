@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
 import { TransformContext } from './types.js';
+import { version as PACKAGE_VERSION, name as PACKAGE_NAME } from '../../package.json';
 
 /**
  * Injects span wrapper around method body
@@ -241,7 +242,7 @@ function createTryCatchBlock(originalBody: ts.Block, isAsync: boolean): ts.Block
 }
 
 /**
- * Creates attributes object for span
+ * Creates attributes object for span following OpenTelemetry semantic conventions
  */
 function createAttributesObject(method: ts.MethodDeclaration, context: TransformContext): ts.ObjectLiteralExpression {
   const methodName = method.name?.getText() || 'unknown';
@@ -260,14 +261,7 @@ function createAttributesObject(method: ts.MethodDeclaration, context: Transform
     ts.factory.createPropertyAssignment(
       ts.factory.createIdentifier('attributes'),
       ts.factory.createObjectLiteralExpression([
-        ts.factory.createPropertyAssignment(
-          ts.factory.createStringLiteral('service.name'),
-          ts.factory.createStringLiteral(className)
-        ),
-        ts.factory.createPropertyAssignment(
-          ts.factory.createStringLiteral('service.method'),
-          ts.factory.createStringLiteral(methodName)
-        ),
+        // Standard OpenTelemetry semantic conventions
         ts.factory.createPropertyAssignment(
           ts.factory.createStringLiteral('code.function'),
           ts.factory.createStringLiteral(methodName)
@@ -275,6 +269,15 @@ function createAttributesObject(method: ts.MethodDeclaration, context: Transform
         ts.factory.createPropertyAssignment(
           ts.factory.createStringLiteral('code.namespace'),
           ts.factory.createStringLiteral(className)
+        ),
+        // Instrumentation library information
+        ts.factory.createPropertyAssignment(
+          ts.factory.createStringLiteral('otel.library.name'),
+          ts.factory.createStringLiteral(PACKAGE_NAME)
+        ),
+        ts.factory.createPropertyAssignment(
+          ts.factory.createStringLiteral('otel.library.version'),
+          ts.factory.createStringLiteral(PACKAGE_VERSION)
         ),
         // Add common attributes if configured
         ...(context.config.commonAttributes ? 
