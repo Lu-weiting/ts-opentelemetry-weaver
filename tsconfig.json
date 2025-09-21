@@ -18,7 +18,8 @@
       "baseUrl": "./src",
       "paths": {
         "@/*": ["*"]
-      }
+      },
+      "moduleDetection": "force"
     },
     "include": [
       "src/**/*"

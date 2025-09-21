@@ -1,6 +1,8 @@
 import * as ts from 'typescript';
 import { TransformContext } from './types.js';
-import { version as PACKAGE_VERSION, name as PACKAGE_NAME } from '../../package.json';
+// Package information - these values are updated during build process
+const PACKAGE_VERSION = '1.1.3';
+const PACKAGE_NAME = '@waitingliou/ts-otel-weaver';
 
 /**
  * Injects span wrapper around method body
