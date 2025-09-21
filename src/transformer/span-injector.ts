@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { TransformContext } from './types.js';
 // Package information - these values are updated during build process
-const PACKAGE_VERSION = '1.1.3';
+const PACKAGE_VERSION = '1.1.4';
 const PACKAGE_NAME = '@waitingliou/ts-otel-weaver';
 
 /**
