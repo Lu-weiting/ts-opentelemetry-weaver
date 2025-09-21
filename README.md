@@ -11,8 +11,6 @@ An automatic instrumentation tool, complimentary to [OpenTelemetry](https://open
 
 ## Specification
 A TypeScript transformer that automatically instruments your business logic methods (class-level) with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
-
-### **Core Features**
 - **Zero-touch**: No code changes required in your business logic
 - **Deep Tracing**: Automatically traces all method calls, including private methods
 - **Minimal Runtime Overhead**: Instead of runtime monkey-patch → compile-time patching
