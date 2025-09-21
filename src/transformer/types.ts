@@ -45,10 +45,10 @@ export interface TracingConfig {
   /** Additional attributes to add to all spans */
   commonAttributes?: Record<string, string>;
   
-  /** Method name patterns to exclude */
+  /** Method name patterns to exclude. Supports exact names and glob patterns (*, ?) */
   excludeMethods?: string[];
   
-  /** Method name patterns to include (if specified, only these will be instrumented) */
+  /** Method name patterns to include (if specified, only these will be instrumented). Supports exact names and glob patterns (*, ?) */
   includeMethods?: string[];
   
   /** Enable debug mode for transformer */

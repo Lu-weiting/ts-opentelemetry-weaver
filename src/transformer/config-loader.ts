@@ -66,7 +66,37 @@ export function shouldTransformFile(fileName: string, config: TracingConfig): bo
 }
 
 /**
- * Checks if a method should be instrumented
+ * Check if method name matches any pattern in the array
+ * Supports exact strings and glob patterns (* and ?)
+ */
+function matchesMethodPattern(methodName: string, patterns: string[]): boolean {
+  return patterns.some(pattern => {
+    // If pattern contains glob characters, use glob matching
+    if (pattern.includes('*') || pattern.includes('?')) {
+      return createMethodGlobRegex(pattern).test(methodName);
+    }
+    // Otherwise, exact string match
+    return pattern === methodName;
+  });
+}
+
+/**
+ * Convert glob pattern to regex for method name matching
+ * Supports: * (zero or more chars), ? (single char)
+ * Note: Method names don't use path separators, so simpler than file glob
+ */
+function createMethodGlobRegex(pattern: string): RegExp {
+  // Escape special regex characters except * and ?
+  const escaped = pattern
+    .replace(/[.+^${}()|[\]\\]/g, '\\$&')  // Escape special chars
+    .replace(/\*/g, '.*')                   // * becomes .*
+    .replace(/\?/g, '.');                   // ? becomes .
+  
+  return new RegExp(`^${escaped}$`);
+}
+
+/**
+ * Checks if a method should be instrumented based on configuration with glob pattern support
  */
 export function shouldInstrumentMethod(methodName: string, config: TracingConfig): boolean {
   // Skip private methods if not configured to instrument them
@@ -76,12 +106,14 @@ export function shouldInstrumentMethod(methodName: string, config: TracingConfig
   
   // If include methods is specified, only instrument those (highest priority)
   if (config.includeMethods && config.includeMethods.length > 0) {
-    return config.includeMethods.includes(methodName);
+    return matchesMethodPattern(methodName, config.includeMethods);
   }
   
   // Check exclude methods
-  if (config.excludeMethods?.includes(methodName)) {
-    return false;
+  if (config.excludeMethods && config.excludeMethods.length > 0) {
+    if (matchesMethodPattern(methodName, config.excludeMethods)) {
+      return false;
+    }
   }
   
   return true;

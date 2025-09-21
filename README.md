@@ -115,8 +115,8 @@ npm install @opentelemetry/api
           "service.version": "1.2.0",
           "deployment.environment": "production"
         },
-        "includeMethods": ["createUser", "updateUser", "deleteUser"],
-        "excludeMethods": ["toString", "valueOf", "deprecated"],
+        "includeMethods": ["create*", "updateUser", "get?ser"],
+        "excludeMethods": ["toString", "test*", "deprecated"],
         "debug": false,
         "logLevel": "warn",
         "maxMethodsPerFile": 50
@@ -136,11 +136,115 @@ npm install @opentelemetry/api
 | `spanNamePrefix` | `string` | ❌ | `"ts-otel-weaver"` | Prefix for all span names. Final span: `{prefix}.{ClassName}.{methodName}` |
 | `autoInjectTracer` | `boolean` | ❌ | `true` | Automatically add `import { trace } from "@opentelemetry/api"` to instrumented files |
 | `commonAttributes` | `Record<string, string>` | ❌ | `{}` | **Key-value pairs** added to ALL spans. Use for service metadata, environment info, etc. |
-| `includeMethods` | `string[]` | ❌ | `[]` | **EXACT method names** to instrument. **Highest priority** - only these methods will be instrumented if specified |
-| `excludeMethods` | `string[]` | ❌ | `["constructor", "toString", "valueOf", "toJSON", "inspect"]` | **EXACT method names** to skip. Ignored if `includeMethods` is set |
+| `includeMethods` | `string[]` | ❌ | `[]` | **Method name patterns** to instrument. Supports exact names and **glob patterns** (`*`, `?`). **Highest priority** - only these methods will be instrumented if specified |
+| `excludeMethods` | `string[]` | ❌ | `["constructor", "toString", "valueOf", "toJSON", "inspect"]` | **Method name patterns** to skip. Supports exact names and **glob patterns** (`*`, `?`). Ignored if `includeMethods` is set |
 | `debug` | `boolean` | ❌ | `false` | Enable detailed transformation logs during compilation |
 | `logLevel` | `'none' \| 'error' \| 'warn' \| 'info' \| 'debug'` | ❌ | `'warn'` | Control console output verbosity |
 | `maxMethodsPerFile` | `number` | ❌ | `100` | Safety limit to prevent accidentally instrumenting too many methods |
+
+
+## Supported Function Types
+
+This transformer automatically detects and properly instruments various TypeScript method types:
+
+### ✅ **Fully Supported**
+
+#### **1. Synchronous Methods**
+```typescript
+class UserService {
+  getUser(id: string): User {          // ✅ Regular sync method
+    return this.users.find(u => u.id === id);
+  }
+  
+  private _validateUser(user: User): boolean {  // ✅ Private method (if enabled)
+    return user.name && user.email;
+  }
+  
+  static getInstance(): UserService {   // ✅ Static method
+    return new UserService();
+  }
+}
+```
+
+#### **2. Asynchronous Methods**
+```typescript
+class UserService {
+  async createUser(data: UserData): Promise<User> {  // ✅ Async method
+    const user = await this.repository.save(data);
+    return user;
+  }
+  
+  async *processUsers(): AsyncGenerator<User> {      // ✅ Async generator
+    for (const userId of this.userIds) {
+      yield await this.getUser(userId);
+    }
+  }
+}
+```
+
+#### **3. Generator Methods**
+```typescript
+class DataProcessor {
+  *generateSequence(count: number): Generator<number> {  // ✅ Sync generator
+    for (let i = 0; i < count; i++) {
+      yield i;
+    }
+  }
+  
+  async *processStream(): AsyncGenerator<ProcessedData> {  // ✅ Async generator
+    for await (const data of this.dataStream) {
+      yield this.process(data);
+    }
+  }
+}
+```
+
+### ❌ **Not Supported (Current Limitations)**
+
+#### **1. Arrow Function Properties**
+```typescript
+class UserService {
+  getUser = (id: string) => {         // ❌ Arrow function property
+    return this.users.find(u => u.id === id);
+  };
+  
+  processData = async (data: any) => { // ❌ Async arrow function property
+    return await this.process(data);
+  };
+}
+```
+
+#### **2. Function Expressions**
+```typescript
+class UserService {
+  getUser: (id: string) => User = function(id) {  // ❌ Function expression
+    return this.users.find(u => u.id === id);
+  };
+}
+```
+
+#### **3. Standalone Functions**
+```typescript
+// ❌ Standalone functions (not class methods)
+function getUserById(id: string): User {
+  return users.find(u => u.id === id);
+}
+
+const processUser = (user: User) => {  // ❌ Standalone arrow function
+  return user.name.toUpperCase();
+};
+```
+
+### 🔧 **Instrumentation Behavior by Method Type**
+
+| Method Type | Instrumentation | Error Handling | Return Value |
+|-------------|----------------|----------------|--------------|
+| **Sync Method** | Synchronous span wrapping | Try-catch with span error recording | Original return value |
+| **Async Method** | Async span wrapping with `await` | Try-catch with span error recording | Original Promise |
+| **Sync Generator** | Generator span wrapping with `yield*` | Try-catch within generator | Original Generator |
+| **Async Generator** | Async generator span wrapping | Try-catch within async generator | Original AsyncGenerator |
+| **Static Method** | Same as instance methods | Same error handling | Original return value |
+
 
 ## Auto-generated spans structure examples
 

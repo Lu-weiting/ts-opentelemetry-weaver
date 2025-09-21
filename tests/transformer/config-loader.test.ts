@@ -111,5 +111,76 @@ describe('Config Loader', () => {
       };
       expect(shouldInstrumentMethod('getData', config)).toBe(true);
     });
+
+    it('should support glob patterns in includeMethods', () => {
+      const config = { 
+        ...DEFAULT_CONFIG, 
+        includeMethods: ['create*', 'update*', 'get?ser'] 
+      };
+      // Matches create*
+      expect(shouldInstrumentMethod('createUser', config)).toBe(true);
+      expect(shouldInstrumentMethod('createOrder', config)).toBe(true);
+      expect(shouldInstrumentMethod('create', config)).toBe(true);
+      
+      // Matches update*  
+      expect(shouldInstrumentMethod('updateUser', config)).toBe(true);
+      expect(shouldInstrumentMethod('updateOrder', config)).toBe(true);
+      
+      // Matches get?ser (? = single char)
+      expect(shouldInstrumentMethod('getUser', config)).toBe(true);
+      expect(shouldInstrumentMethod('getUserData', config)).toBe(false); // Too long
+      expect(shouldInstrumentMethod('getser', config)).toBe(false); // Too short
+      
+      // Should not match
+      expect(shouldInstrumentMethod('deleteUser', config)).toBe(false);
+      expect(shouldInstrumentMethod('processData', config)).toBe(false);
+    });
+
+    it('should support glob patterns in excludeMethods', () => {
+      const config = { 
+        ...DEFAULT_CONFIG, 
+        excludeMethods: ['test*', 'temp*', '*Util', 'deprecated?'] 
+      };
+      // Matches test*
+      expect(shouldInstrumentMethod('testMethod', config)).toBe(false);
+      expect(shouldInstrumentMethod('testData', config)).toBe(false);
+      expect(shouldInstrumentMethod('test', config)).toBe(false);
+      
+      // Matches temp*
+      expect(shouldInstrumentMethod('tempCache', config)).toBe(false);
+      expect(shouldInstrumentMethod('tempStorage', config)).toBe(false);
+      
+      // Matches *Util
+      expect(shouldInstrumentMethod('parseUtil', config)).toBe(false);
+      expect(shouldInstrumentMethod('dataUtil', config)).toBe(false);
+      expect(shouldInstrumentMethod('Util', config)).toBe(false);
+      
+      // Matches deprecated?
+      expect(shouldInstrumentMethod('deprecated1', config)).toBe(false);
+      expect(shouldInstrumentMethod('deprecated2', config)).toBe(false);
+      expect(shouldInstrumentMethod('deprecated', config)).toBe(true); // No suffix
+      expect(shouldInstrumentMethod('deprecated12', config)).toBe(true); // Too long
+      
+      // Should not match (should be instrumented)
+      expect(shouldInstrumentMethod('createUser', config)).toBe(true);
+      expect(shouldInstrumentMethod('processData', config)).toBe(true);
+    });
+
+    it('should support exact strings alongside glob patterns', () => {
+      const config = { 
+        ...DEFAULT_CONFIG, 
+        includeMethods: ['exactMethod', 'create*', 'get?ser'] 
+      };
+      // Exact match
+      expect(shouldInstrumentMethod('exactMethod', config)).toBe(true);
+      
+      // Glob patterns
+      expect(shouldInstrumentMethod('createUser', config)).toBe(true);
+      expect(shouldInstrumentMethod('getUser', config)).toBe(true);
+      
+      // Should not match
+      expect(shouldInstrumentMethod('exact', config)).toBe(false);
+      expect(shouldInstrumentMethod('Method', config)).toBe(false);
+    });
   });
 });
