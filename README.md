@@ -173,12 +173,12 @@ This transformer automatically detects and properly instruments various TypeScri
 | **Async Methods** | ✅ **Supported** | Class | ❌ | ✅ | ✅ | `async createUser(data: UserData)` |
 | **Generator Methods** | ✅ **Supported** | Class | ✅ | ✅ | ✅ | `*generateSequence(count: number)` |
 | **Async Generators** | ✅ **Supported** | Class | ❌ | ✅ | ✅ | `async *processUsers()` |
-| **Arrow Function Properties** | 🎯 **Excluded by Design** | Class | ✅ | ✅ | ❌ | `getUser = (id: string) => {}` |
-| **Function Expressions** | 🎯 **Excluded by Design** | Class | ✅ | ✅ | ❌ | `getUser: () => User = function() {}` |
-| **Standalone Functions** | 🎯 **Excluded by Design** | Global | ✅ | ✅ | ✅ | `function getUserById(id: string)` |
-| **Arrow Functions** | 🎯 **Excluded by Design** | Global | ✅ | ✅ | ❌ | `const processUser = (user) => {}` |
-| **Nested Functions** | 🎯 **Excluded by Design** | Function | ✅ | ✅ | ✅ | Functions inside other functions |
-| **Object Methods** | 🎯 **Excluded by Design** | Object | ✅ | ✅ | ✅ | `const obj = { method() {} }` |
+| **Arrow Function Properties** | 🎯 **Excluded by Design** | Class | ❌ | ❌ | ❌ | `getUser = (id: string) => {}` |
+| **Function Expressions** | 🎯 **Excluded by Design** | Class | ❌ | ❌ | ❌ | `getUser: () => User = function() {}` |
+| **Standalone Functions** | 🎯 **Excluded by Design** | Global | ❌ | ❌ | ❌ | `function getUserById(id: string)` |
+| **Arrow Functions** | 🎯 **Excluded by Design** | Global | ❌ | ❌ | ❌ | `const processUser = (user) => {}` |
+| **Nested Functions** | 🎯 **Excluded by Design** | Function | ❌ | ❌ | ❌ | Functions inside other functions |
+| **Object Methods** | 🎯 **Excluded by Design** | Object | ❌ | ❌ | ❌ | `const obj = { method() {} }` |
 
 
 ## Auto-generated spans structure examples
