@@ -10,10 +10,28 @@ An automatic instrumentation tool, complimentary to [OpenTelemetry](https://open
 
 
 ## Specification
-A TypeScript transformer that automatically instruments your business logic methods with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
+A TypeScript transformer that automatically instruments your business logic methods (class-level) with OpenTelemetry spans at compile time through AST weaving, achieving true "application-level transparency" as described in Google's Dapper paper.
+
+### **Core Features**
 - **Zero-touch**: No code changes required in your business logic
 - **Deep Tracing**: Automatically traces all method calls, including private methods
-- **Minimal Runtime Overhead**: Instead of runtime monkey-patch -> comile-time patching
+- **Minimal Runtime Overhead**: Instead of runtime monkey-patch → compile-time patching
+
+### **Design Philosophy**
+This transformer uses a **strategically designed AST visitor** that specifically targets **class-level method declarations** to achieve optimal performance and precision in business logic tracing.
+
+**Design Principles:**
+- **Precision over Volume**: Focuses on **business logic methods** in classes where most application logic resides
+- **Performance Optimization**: Avoids instrumenting every function to prevent **span explosion** and performance degradation
+- **Strategic Targeting**: Selectively instruments `ts.isMethodDeclaration` nodes which typically contain core business operations
+- **Noise Reduction**: Excludes utility functions, helpers, and nested functions that would create excessive telemetry noise
+
+**Benefits:**
+- **Low Overhead**: Minimal performance impact by avoiding over-instrumentation
+- **Scalable Monitoring**: Maintains manageable trace volumes even in large applications
+- **Clear Insights**: Provides actionable observability into your application's business logic flow
+
+This **intentional scope limitation** ensures you get **high-value tracing data** without overwhelming your observability infrastructure or impacting application performance.
 
 > **OpenTelemetry Compatible**: This package follows [OpenTelemetry Semantic Conventions](https://opentelemetry.io/docs/specs/semconv/) and integrates seamlessly with the OpenTelemetry ecosystem.
 
@@ -145,105 +163,24 @@ npm install @opentelemetry/api
 
 ## Supported Function Types
 
-This transformer automatically detects and properly instruments various TypeScript method types:
+This transformer automatically detects and properly instruments various TypeScript method types based on the design principles outlined in the Specification section.
 
-### ✅ **Fully Supported**
+### **Function Type Support Matrix**
 
-#### **1. Synchronous Methods**
-```typescript
-class UserService {
-  getUser(id: string): User {          // ✅ Regular sync method
-    return this.users.find(u => u.id === id);
-  }
-  
-  private _validateUser(user: User): boolean {  // ✅ Private method (if enabled)
-    return user.name && user.email;
-  }
-  
-  static getInstance(): UserService {   // ✅ Static method
-    return new UserService();
-  }
-}
-```
-
-#### **2. Asynchronous Methods**
-```typescript
-class UserService {
-  async createUser(data: UserData): Promise<User> {  // ✅ Async method
-    const user = await this.repository.save(data);
-    return user;
-  }
-  
-  async *processUsers(): AsyncGenerator<User> {      // ✅ Async generator
-    for (const userId of this.userIds) {
-      yield await this.getUser(userId);
-    }
-  }
-}
-```
-
-#### **3. Generator Methods**
-```typescript
-class DataProcessor {
-  *generateSequence(count: number): Generator<number> {  // ✅ Sync generator
-    for (let i = 0; i < count; i++) {
-      yield i;
-    }
-  }
-  
-  async *processStream(): AsyncGenerator<ProcessedData> {  // ✅ Async generator
-    for await (const data of this.dataStream) {
-      yield this.process(data);
-    }
-  }
-}
-```
-
-### ❌ **Not Supported (Current Limitations)**
-
-#### **1. Arrow Function Properties**
-```typescript
-class UserService {
-  getUser = (id: string) => {         // ❌ Arrow function property
-    return this.users.find(u => u.id === id);
-  };
-  
-  processData = async (data: any) => { // ❌ Async arrow function property
-    return await this.process(data);
-  };
-}
-```
-
-#### **2. Function Expressions**
-```typescript
-class UserService {
-  getUser: (id: string) => User = function(id) {  // ❌ Function expression
-    return this.users.find(u => u.id === id);
-  };
-}
-```
-
-#### **3. Standalone Functions**
-```typescript
-// ❌ Standalone functions (not class methods)
-function getUserById(id: string): User {
-  return users.find(u => u.id === id);
-}
-
-const processUser = (user: User) => {  // ❌ Standalone arrow function
-  return user.name.toUpperCase();
-};
-```
-
-### 🔧 **Instrumentation Behavior by Method Type**
-
-| Method Type | Instrumentation | Error Handling | Return Value |
-|-------------|----------------|----------------|--------------|
-| **Sync Method** | Synchronous span wrapping | Try-catch with span error recording | Original return value |
-| **Async Method** | Async span wrapping with `await` | Try-catch with span error recording | Original Promise |
-| **Sync Generator** | Generator span wrapping with `yield*` | Try-catch within generator | Original Generator |
-| **Async Generator** | Async generator span wrapping | Try-catch within async generator | Original AsyncGenerator |
-| **Static Method** | Same as instance methods | Same error handling | Original return value |
+| Function Type | Status | Scope | Sync | Async | Generator | Example |
+|--------------|--------|-------|------|-------|-----------|---------|
+| **Class Methods** | ✅ **Supported** | Class | ✅ | ✅ | ✅ | `getUser(id: string): User` |
+| **Private Methods** | ✅ **Supported** | Class | ✅ | ✅ | ✅ | `private _validateUser(user: User)` |
+| **Static Methods** | ✅ **Supported** | Class | ✅ | ✅ | ✅ | `static getInstance(): UserService` |
+| **Async Methods** | ✅ **Supported** | Class | ❌ | ✅ | ✅ | `async createUser(data: UserData)` |
+| **Generator Methods** | ✅ **Supported** | Class | ✅ | ✅ | ✅ | `*generateSequence(count: number)` |
+| **Async Generators** | ✅ **Supported** | Class | ❌ | ✅ | ✅ | `async *processUsers()` |
+| **Arrow Function Properties** | 🎯 **Excluded by Design** | Class | ✅ | ✅ | ❌ | `getUser = (id: string) => {}` |
+| **Function Expressions** | 🎯 **Excluded by Design** | Class | ✅ | ✅ | ❌ | `getUser: () => User = function() {}` |
+| **Standalone Functions** | 🎯 **Excluded by Design** | Global | ✅ | ✅ | ✅ | `function getUserById(id: string)` |
+| **Arrow Functions** | 🎯 **Excluded by Design** | Global | ✅ | ✅ | ❌ | `const processUser = (user) => {}` |
+| **Nested Functions** | 🎯 **Excluded by Design** | Function | ✅ | ✅ | ✅ | Functions inside other functions |
+| **Object Methods** | 🎯 **Excluded by Design** | Object | ✅ | ✅ | ✅ | `const obj = { method() {} }` |
 
 
 ## Auto-generated spans structure examples
@@ -252,9 +189,12 @@ When you call a method, it automatically generates a tracing structure like:
 
 ```
 myapp.UserService.getUser
-├── myapp.UserService._fetchUserData
-│   ├── myapp.DatabaseService.query
-│   └── myapp.CacheService.get
+├──  myapp.UserService.createUser
+│   ├── myapp.CacheService.get
+│   ├── myapp.UserService._validateUserData (private method)
+│   ├── myapp.UserRepository.save
+│   │   ├── myapp.UserRepository._validateUser
+│   │   └── myapp.UserRepository._persistUser  
 ├── myapp.UserService._processUserData
 │   ├── myapp.ValidationService.validate
 │   └── myapp.TransformService.transform
