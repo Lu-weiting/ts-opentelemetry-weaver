@@ -1,6 +1,6 @@
 {
     "name": "@waitingliou/ts-otel-weaver",
-    "version": "1.1.6",
+    "version": "1.1.7",
     "description": "Zero-touch business-logic tracing and OpenTelemetry automatic instrumentation for TypeScript via compile-time AST weaving",
     "type": "module",
     "main": "dist/index.js",
